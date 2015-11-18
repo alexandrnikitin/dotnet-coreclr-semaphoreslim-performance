@@ -912,4 +912,24 @@ namespace System.Threading2
         }
         #endregion
     }
+
+    internal static class TimeoutHelper
+    {
+        public static uint GetTime()
+        {
+            return (uint)Environment.TickCount;
+        }
+
+        public static int UpdateTimeOut(uint startTime, int originalWaitMillisecondsTimeout)
+        {
+            uint num1 = TimeoutHelper.GetTime() - startTime;
+            if (num1 > (uint)int.MaxValue)
+                return 0;
+            int num2 = originalWaitMillisecondsTimeout - (int)num1;
+            if (num2 <= 0)
+                return 0;
+            return num2;
+        }
+    }
+
 }
