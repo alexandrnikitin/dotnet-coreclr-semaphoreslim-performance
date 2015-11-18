@@ -74,27 +74,28 @@ namespace System.Threading2
         private TaskNode m_asyncTail;
 
         // A pre-completed task with Result==true
-        private readonly static Task<bool> s_trueTask =
-            new Task<bool>(false, true, (TaskCreationOptions)InternalTaskOptions.DoNotDispose, default(CancellationToken));
+        //private readonly static Task<bool> s_trueTask =
+        //    new Task<bool>(false, true, (TaskCreationOptions)InternalTaskOptions.DoNotDispose, default(CancellationToken));
+        private static readonly Task<bool> s_trueTask = null;
 
         // No maximum constant
         private const int NO_MAXIMUM = Int32.MaxValue;
 
         // Task in a linked list of asynchronous waiters
-        private sealed class TaskNode : Task<bool>, IThreadPoolWorkItem
+        private sealed class TaskNode : Task<bool>
         {
             internal TaskNode Prev, Next;
-            internal TaskNode() : base() { }
+            internal TaskNode() : base(() => true) { }
 
-            [SecurityCritical]
-            void IThreadPoolWorkItem.ExecuteWorkItem()
-            {
-                bool setSuccessfully = TrySetResult(true);
-                Contract.Assert(setSuccessfully, "Should have been able to complete task");
-            }
+            //[SecurityCritical]
+            //void IThreadPoolWorkItem.ExecuteWorkItem()
+            //{
+            //    bool setSuccessfully = TrySetResult(true);
+            //    Contract.Assert(setSuccessfully, "Should have been able to complete task");
+            //}
 
-            [SecurityCritical]
-            void IThreadPoolWorkItem.MarkAborted(ThreadAbortException tae) { /* nop */ }
+            //[SecurityCritical]
+            //void IThreadPoolWorkItem.MarkAborted(ThreadAbortException tae) { /* nop */ }
         }
         #endregion
 
@@ -333,7 +334,7 @@ namespace System.Threading2
             //Register for cancellation outside of the main lock.
             //NOTE: Register/deregister inside the lock can deadlock as different lock acquisition orders could
             //      occur for (1)this.m_lockObj and (2)cts.internalLock
-            CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.InternalRegisterWithoutEC(s_cancellationTokenCanceledEventHandler, this);
+            CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(s_cancellationTokenCanceledEventHandler, this);
             try
             {
                 // Perf: first spin wait for the count to be positive, but only up to the first planned yield.
@@ -607,7 +608,8 @@ namespace System.Threading2
 
             // Bail early for cancellation
             if (cancellationToken.IsCancellationRequested)
-                return Task.FromCancellation<bool>(cancellationToken);
+                //return Task.FromCancellation<bool>(cancellationToken);
+                return null;
 
             lock (m_lockObj)
             {
@@ -616,7 +618,8 @@ namespace System.Threading2
                 {
                     --m_currentCount;
                     if (m_waitHandle != null && m_currentCount == 0) m_waitHandle.Reset();
-                    return s_trueTask;
+                    //return s_trueTask;
+                    return null;
                 }
                 // If there aren't, create and return a task to the caller.
                 // The task will be completed either when they've successfully acquired
@@ -832,7 +835,7 @@ namespace System.Threading2
         [SecuritySafeCritical] // for ThreadPool.UnsafeQueueCustomWorkItem
         private static void QueueWaiterTask(TaskNode waiterTask)
         {
-            ThreadPool.UnsafeQueueCustomWorkItem(waiterTask, forceGlobal: false);
+            //ThreadPool.UnsafeQueueCustomWorkItem(waiterTask, forceGlobal: false);
         }
 
         /// <summary>
@@ -908,7 +911,8 @@ namespace System.Threading2
         /// <param name="str">The key string</param>
         private static string GetResourceString(string str)
         {
-            return Environment.GetResourceString(str);
+            //return Environment.GetResourceString(str);
+            return str;
         }
         #endregion
     }
