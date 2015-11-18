@@ -18,10 +18,11 @@ using System.Security;
 using System.Security.Permissions;
 using System.Runtime.InteropServices;
 using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 
 // The class will be part of the current System.Threading namespace
-namespace System.Threading
+namespace System.Threading2
 {
     /// <summary>
     /// Limits the number of threads that can access a resource or pool of resources concurrently.
