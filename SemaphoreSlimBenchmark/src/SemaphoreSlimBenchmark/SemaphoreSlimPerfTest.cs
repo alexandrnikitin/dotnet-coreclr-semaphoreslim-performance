@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SemaphorePerfTests
 {
+    // TODO uncomment to perform tests against your SemaphoreSlim
+    // using System.Threading2;
+
     public class SemaphoreSlimPerfTest
     {
         private static TimeSpan TestSemaphoreSlim(string name, int elemCount, int releasingThreadCount, int waitingThreadCount, int releasingSpin, int waitingSpin)
