@@ -23,6 +23,7 @@ namespace SemaphorePerfTests
             Thread[] takeThreads = new Thread[waitingThreadCount];
 
             int addedElemCount = 0;
+            int waitEnteredCount = 0;
 
             Barrier barierStart = new Barrier(1 + addThreads.Length + takeThreads.Length);
             Barrier barierAdders = new Barrier(1 + addThreads.Length);
@@ -54,6 +55,7 @@ namespace SemaphorePerfTests
                     while (!srcCancel.IsCancellationRequested)
                     {
                         sem.Wait(myToken);
+                        Interlocked.Increment(ref waitEnteredCount);
                         Thread.SpinWait(waitingSpin);
                     }
                 }
@@ -91,7 +93,7 @@ namespace SemaphorePerfTests
             for (int i = 0; i < takeThreads.Length; i++)
                 takeThreads[i].Join();
 
-            Console.WriteLine(name + ". SemaphoreSlim. Time = " + sw.ElapsedMilliseconds.ToString() + "ms");
+            Console.WriteLine(name + ". SemaphoreSlim. Time = " + sw.ElapsedMilliseconds.ToString() + "ms" + " entered waits = " + waitEnteredCount.ToString());
             return sw.Elapsed;
         }
 
