@@ -11,6 +11,7 @@ namespace SemaphoreSlimBenchmark
     {
         public void Main(string[] args)
         {
+            SemaphoreSlimCommonPerfTest.RunTest();
             SemaphoreSlimPerfTest.RunTest();
             BlockingCollectionPerfTest.RunTest();
         }
